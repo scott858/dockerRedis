@@ -37,6 +37,7 @@ ENV REDIS_DOWNLOAD_URL http://download.redis.io/redis-stable.tar.gz
 # for redis-sentinel see: http://redis.io/topics/sentinel
 RUN mkdir /etc/redis 
 RUN mkdir /var/redis 
+RUN mkdir /var/redis/7379
 RUN mkdir /var/log/redis 
 COPY 7379.conf /etc/redis/7379.conf
 COPY redis_7379 /etc/init.d/redis_7379
@@ -54,11 +55,11 @@ RUN buildDeps='gcc libc6-dev make' \
 	&& update-rc.d redis_7379 defaults \
 	&& apt-get purge -y --auto-remove $buildDeps
 
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+
 RUN mkdir /data && chown redis:redis /data
 VOLUME /data
 WORKDIR /data
 
-CMD [ "/etc/init.d/redis_7379", "start" ]
-
 EXPOSE 7379
-CMD [ "redis-server" ]
+ENTRYPOINT ["/docker-entrypoint.sh"]
