@@ -8,7 +8,7 @@ RUN cd /home
 RUN apt-get update
 RUN apt-get install -y software-properties-common python-software-properties wget
 RUN apt-get install -y sudo
-RUN apt-get install -y vim
+RUN apt-get install -y vim iproute arp-scan lsof
 
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
@@ -37,6 +37,7 @@ ENV REDIS_DOWNLOAD_URL http://download.redis.io/redis-stable.tar.gz
 # for redis-sentinel see: http://redis.io/topics/sentinel
 RUN mkdir /etc/redis 
 RUN mkdir /var/redis 
+RUN mkdir /var/log/redis 
 COPY 7379.conf /etc/redis/7379.conf
 COPY redis_7379 /etc/init.d/redis_7379
 
@@ -48,7 +49,6 @@ RUN buildDeps='gcc libc6-dev make' \
 	&& tar -xzf redis-stable.tar.gz \
 	&& rm redis-stable.tar.gz \
 	&& cd redis-stable \
-	&& cp utils/redis_init_script /etc/init.d/redis_7379 \
 	&& make \
 	&& make install \
 	&& update-rc.d redis_7379 defaults \
